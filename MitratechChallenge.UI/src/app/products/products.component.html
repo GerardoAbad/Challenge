@@ -1,0 +1,165 @@
+<h1 class="h1">Product Inventory</h1>
+<div fxLayout="column" class="products">
+  <div *ngIf="!selectedProduct.id && !addProduct">
+    <div fxLayout="column">
+      <div>
+        <button
+          mat-raised-button
+          color="primary"
+          id="addProduct"
+          (click)="showAddProduct()"
+        >
+          Add
+        </button>
+      </div>
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input
+          matInput
+          (keyup)="applyFilter($event)"
+          placeholder="Product Name"
+          #input
+        />
+      </mat-form-field>
+    </div>
+    <table
+      mat-table
+      id="productList"
+      [dataSource]="dataSource"
+      class="mat-elevation-z1"
+    >
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let product">{{ product.description }}</td>
+      </ng-container>
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Price</th>
+        <td mat-cell *matCellDef="let product">{{ product.price }}</td>
+      </ng-container>
+      <ng-container matColumnDef="edit">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let product">
+          <button mat-icon-button (click)="editProduct(product)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let product">
+          <button mat-icon-button (click)="deleteProduct(product)">
+            <mat-icon
+              aria-hidden="false"
+              aria-label="Example home icon"
+              fontIcon="delete"
+            ></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          No data matching the filter "{{ input.value }}"
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div
+    id="addProductForm"
+    fxLayout="column"
+    *ngIf="selectedProduct.id || addProduct"
+  >
+    <h2>{{ addProduct ? "Add" : "Selected" }} Product</h2>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input
+        matInput
+        required
+        id="name"
+        type="text"
+        minlength="3"
+        maxlength="100"
+        readonly="{{ addProduct ? false : true }}"
+        [(ngModel)]="selectedProduct.name"
+        #name="ngModel"
+      />
+    </mat-form-field>
+    <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert">
+      <div *ngIf="name.errors?.['required']">Name is required.</div>
+      <div *ngIf="name.errors?.['minlength']">
+        Name must be at least 3 characters long.
+      </div>
+      <div *ngIf="name.errors?.['maxlength']">
+        Name must be at most 100 characters long.
+      </div>
+    </div>
+    <mat-form-field>
+      <mat-label>Description </mat-label>
+      <textarea
+        id="description"
+        matInput
+        required
+        minlength="5"
+        maxlength="1000"
+        [(ngModel)]="selectedProduct!.description"
+        #description="ngModel"
+      ></textarea>
+    </mat-form-field>
+    <div
+      *ngIf="description.invalid && (description.dirty || description.touched)"
+      class="alert"
+    >
+      <div *ngIf="description.errors?.['required']">
+        Description is required.
+      </div>
+      <div *ngIf="description.errors?.['minlength']">
+        Description must be at least 5 characters long.
+      </div>
+      <div *ngIf="description.errors?.['maxlength']">
+        Description must be at most 1000 characters long.
+      </div>
+    </div>
+    <mat-form-field>
+      <mat-label>Price </mat-label>
+      <input
+        matInput
+        id="price"
+        min="1"
+        max="20000"
+        type="number"
+        step="0.01"
+        [(ngModel)]="selectedProduct.price"
+        (keydown)="preventDecimal($event)"
+        (paste)="handleOnPaste($event)"
+        #price="ngModel"
+      />
+    </mat-form-field>
+    <div *ngIf="price.invalid && (price.dirty || price.touched)" class="alert">
+      <div *ngIf="price.errors?.['required']">Price is required.</div>
+      <div *ngIf="price.errors?.['min']">Price must be at least 1.</div>
+      <div *ngIf="price.errors?.['max']">Price must be at most 20000.</div>
+    </div>
+    <div>
+      <button
+        disabled="{{ name.invalid || description.invalid || price.invalid }}"
+        mat-raised-button
+        color="primary"
+        id="create"
+        (click)="updateProduct()"
+      >
+        {{ addProduct ? "Create" : "Update" }}
+      </button>
+      <button mat-raised-button color="primary" (click)="clearProduct()">
+        Cancel
+      </button>
+    </div>
+  </div>
+  <div class="loading" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>
