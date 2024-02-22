@@ -42,12 +42,12 @@ To execute E2E tests follow the instructions bellow:
 - Start `MitratechChallenge.UI`
 
 ```bash
-ng serve
+  ng serve
 ```
 
 - cd into `MitratechChallenge.Automation` and run:
 
 ```bash
-npm i
+  npm i
   npm cypress run
 ```
