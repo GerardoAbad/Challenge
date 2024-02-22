@@ -18,7 +18,7 @@ To run the frontend, cd into the `MitratechChallenge.UI` directory and run:
 
 ```bash
 npm install
-ng serve
+ng serve --open
 ```
 
 ## Testing
